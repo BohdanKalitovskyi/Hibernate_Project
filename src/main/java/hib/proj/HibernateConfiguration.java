@@ -11,6 +11,7 @@ public class HibernateConfiguration {
     public SessionFactory sessionFactory(){
         org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
         configuration
+                .addAnnotatedClass(Profile.class)
                 .addAnnotatedClass(Client.class)
                 .addPackage("hib.proj")
                 .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")

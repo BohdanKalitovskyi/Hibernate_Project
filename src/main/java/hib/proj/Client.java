@@ -29,6 +29,9 @@ public class Client {
     @Column(name = "registration_year")
     private long registrationYear;
 
+    @OneToOne(mappedBy = "client",cascade = CascadeType.REMOVE)
+    private Profile profile;
+
     public Client() {
     }
 
@@ -36,6 +39,14 @@ public class Client {
         this.registrationYear = registrationYear;
         this.email = email;
         this.name = name;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     public String getName() {
@@ -60,5 +71,16 @@ public class Client {
 
     public void setRegistrationYear(long registrationYear) {
         this.registrationYear = registrationYear;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", registrationYear=" + registrationYear +
+                ", profile=" + profile +
+                '}';
     }
 }

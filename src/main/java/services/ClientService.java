@@ -4,9 +4,12 @@ import hib.proj.Client;
 import hib.proj.TransactionHelper;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ClientService {
     private final SessionFactory sessionFactory;
     private final TransactionHelper transactionHelper;
