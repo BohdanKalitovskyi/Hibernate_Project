@@ -1,6 +1,7 @@
 package hib.proj;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JavaType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +37,14 @@ public class Client {
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Order> orders = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "client_coupons",
+            joinColumns = @JoinColumn(name = "client_id",referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "coupon_id", referencedColumnName = "id")
+    )
+    private List<Coupon> couponList = new ArrayList<>();
 
     public List<Order> getOrders() {
         return orders;

@@ -4,6 +4,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import services.ClientService;
+import services.CouponService;
 import services.OrderService;
 import services.ProfileService;
 
@@ -16,6 +17,8 @@ public class Main {
         ClientService clientService = context.getBean(ClientService.class);
         ProfileService profileService = context.getBean(ProfileService.class);
         OrderService orderService = context.getBean(OrderService.class);
+        CouponService couponService = context.getBean(CouponService.class);
+
 
 
 
@@ -29,7 +32,10 @@ public class Main {
 
         orderService.saveOrder(2003L,10.2,"processing",client);
 
+        Coupon coupon = new Coupon(40f,"40percentOff");
+        couponService.saveCoupon(coupon);
 
+        couponService.addCouponToUser(1L,1L);
 
         System.out.println(clientService.findAll());
 
