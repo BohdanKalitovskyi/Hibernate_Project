@@ -13,6 +13,7 @@ public class HibernateConfiguration {
         configuration
                 .addAnnotatedClass(Profile.class)
                 .addAnnotatedClass(Client.class)
+                .addAnnotatedClass(Order.class)
                 .addPackage("hib.proj")
                 .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
                 .setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/postgres")

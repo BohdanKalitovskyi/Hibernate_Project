@@ -2,7 +2,9 @@ package hib.proj;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Clients")
@@ -32,8 +34,20 @@ public class Client {
     @OneToOne(mappedBy = "client",cascade = CascadeType.REMOVE)
     private Profile profile;
 
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Order> orders = new ArrayList<>();
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
     public Client() {
     }
+
 
     public Client(long registrationYear, String email, String name) {
         this.registrationYear = registrationYear;
@@ -81,6 +95,7 @@ public class Client {
                 ", email='" + email + '\'' +
                 ", registrationYear=" + registrationYear +
                 ", profile=" + profile +
+                ", orders=" + orders +
                 '}';
     }
 }
