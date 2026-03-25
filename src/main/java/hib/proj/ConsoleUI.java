@@ -6,9 +6,7 @@ import services.CouponService;
 import services.OrderService;
 import services.ProfileService;
 
-import java.io.Console;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 @Component
@@ -69,10 +67,9 @@ public class ConsoleUI {
         Client client = clientService.getById(Id);
         if (!checkIfExists(client))
             return;
-        List<Coupon> coupons = clientService.getClientCoupons(Id);
 
-        System.out.println("\n" + clientService.getById(Id).getName() + " owns :");
-        coupons.forEach(coupon -> System.out.println(coupon.getCode()));
+        System.out.println("\n" + client.getName() + " owns :");
+        client.getCoupons().forEach(coupon -> System.out.println(coupon.getCode()));
     }
 
     public void showClient() {
@@ -145,6 +142,33 @@ public class ConsoleUI {
         profileService.saveProfile(new Profile(address, phone, clientService.getById(clientId)));
     }
 
+    public void updateProfile() {
+        long Id = readLong("Enter the client's Id");
+        Client client = clientService.getById(Id);
+        if (!checkIfExists(client))
+            return;
+        Profile profile = client.getProfile();
+        if (profile == null) {
+            System.out.println("This client does not have a profile to update.");
+            return;
+        }
+
+        System.out.print("Enter new phone (leave blank to keep '" + profile.getPhone() + "'): ");
+        String newPhone = scanner.nextLine();
+        if (!newPhone.isBlank()) {
+            profile.setPhone(newPhone);
+        }
+
+        System.out.print("Enter new address (leave blank to keep '" + profile.getAddress() + "'): ");
+        String newAddress = scanner.nextLine();
+        if (!newAddress.isBlank()) {
+            profile.setAddress(newAddress);
+        }
+
+        profileService.updateProfile(profile);
+        System.out.println("Profile updated successfully!");
+    }
+
     public void addProfile() {
         long Id = readLong("Enter the client's Id");
         Client client = clientService.getById(Id);
@@ -172,6 +196,20 @@ public class ConsoleUI {
 
         orderService.saveOrder(orderYear, amount, status, client);
         System.out.println("Order created for client: " + client.getName());
+    }
+
+    public void assignCoupon() {
+        long clientId = readLong("Enter the client's Id");
+        Client client = clientService.getById(clientId);
+        if (!checkIfExists(client))
+            return;
+        registrationCoupon(clientId);
+    }
+
+    public void cancelOrder() {
+        long id = readLong("Enter the order ID to cancel");
+        orderService.cancelOrder(id);
+        System.out.println("Order cancelled successfully!");
     }
 
     public void addCoupon() {
@@ -247,7 +285,10 @@ public class ConsoleUI {
                     "8 Show the client by id\n" +
                     "9 Show the client's coupons\n" +
                     "10 Show the client's profile\n" +
-                    "11 Exit\n");
+                    "11 Update the client's profile\n" +
+                    "12 Assign a coupon to client\n" +
+                    "13 Cancel an order\n" +
+                    "14 Exit\n");
 
             int choice = -1;
             try {
@@ -267,8 +308,10 @@ public class ConsoleUI {
                 case 8 -> showClient();
                 case 9 -> showCoupons();
                 case 10 -> showProfile();
-
-                case 11 -> {
+                case 11 -> updateProfile();
+                case 12 -> assignCoupon();
+                case 13 -> cancelOrder();
+                case 14 -> {
                     isRunning = false;
                     System.out.println("Bye!");
                 }

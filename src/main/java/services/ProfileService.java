@@ -10,16 +10,21 @@ public class ProfileService {
     private final SessionFactory sessionFactory;
     private final TransactionHelper transactionHelper;
 
-
     public ProfileService(SessionFactory sessionFactory, TransactionHelper transactionHelper) {
         this.sessionFactory = sessionFactory;
         this.transactionHelper = transactionHelper;
     }
 
-    public Profile saveProfile(Profile profile){
+    public Profile saveProfile(Profile profile) {
         return transactionHelper.executeInTransaction(session -> {
-           session.persist(profile);
-           return profile;
+            session.persist(profile);
+            return profile;
+        });
+    }
+
+    public Profile updateProfile(Profile profile) {
+        return transactionHelper.executeInTransaction(session -> {
+            return session.merge(profile);
         });
     }
 }
