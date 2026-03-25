@@ -8,7 +8,11 @@ import services.CouponService;
 import services.OrderService;
 import services.ProfileService;
 
+import java.util.Scanner;
+
 public class Main {
+
+
     public static void main (String [] args){
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext("hib.proj","services");
 
@@ -19,25 +23,24 @@ public class Main {
         OrderService orderService = context.getBean(OrderService.class);
         CouponService couponService = context.getBean(CouponService.class);
 
+        context.getBean(ConsoleUI.class).start();
 
 
+//        Client client = new Client(2001,"cl1@gmail.com","Bob");
+//
+//        clientService.saveClient(client);
+//
+//        Profile profile = new Profile("023412311","Shevchenka st. 111",client);
+//
+//        profileService.saveProfile(profile);
+//
+//        orderService.saveOrder(2003L,10.2,"processing",client);
+//
+//        Coupon coupon = new Coupon(40f,"40percentOff");
+//        couponService.saveCoupon(coupon);
+//
+//        couponService.addCouponToUser(1L,1L);
 
-        Client client = new Client(2001,"cl1@gmail.com","Bob");
-
-        clientService.saveClient(client);
-
-        Profile profile = new Profile("023412311","Shevchenka st. 111",client);
-
-        profileService.saveProfile(profile);
-
-        orderService.saveOrder(2003L,10.2,"processing",client);
-
-        Coupon coupon = new Coupon(40f,"40percentOff");
-        couponService.saveCoupon(coupon);
-
-        couponService.addCouponToUser(1L,1L);
-
-        System.out.println(clientService.findAll());
 
     }
 }
