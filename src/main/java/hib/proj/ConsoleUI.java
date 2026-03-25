@@ -51,6 +51,13 @@ public class ConsoleUI {
         System.out.println("Client saved with ID: " + savedClient.getId());
 
         registrationCoupon(savedClient.getId());
+
+        long choice = readLong("Add more information: \n" +
+                "1 Continue: \n" +
+                "2 Later");
+        if(choice==1)
+            setProfile(savedClient.getId());
+
     }
 
     public void showCoupons(){
@@ -65,6 +72,26 @@ public class ConsoleUI {
         long clientId = readLong("Enter the client's Id");
         Client client = clientService.getById(clientId);
         System.out.println("Client Id: "+ client.getId() + " | Name: "+client.getName()+ " | Email: "+client.getEmail()+" | Registration Year: "+ client.getRegistrationYear());
+    }
+
+    private void deleteClient(){
+        long clientId = readLong("Enter the client's Id");
+        clientService.deleteClient(clientId);
+    }
+
+    private void setProfile(Long clientId){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the phone number: ");
+        String phone = scanner.nextLine();
+        System.out.println("Enter the home address: ");
+        String address = scanner.nextLine();
+        profileService.saveProfile(new Profile(address,phone,clientService.getById(clientId)));
+    }
+
+    public void showProfile(){
+        long clientId = readLong("Enter the client's Id");
+        Client client = clientService.getById(clientId);
+        System.out.println(client.getName()+"'s address: "+client.getProfile().getAddress()+" | Phone number: "+client.getProfile().getPhone());
     }
 
     private long readLong(String message) {
@@ -100,18 +127,20 @@ public class ConsoleUI {
                     "3 Update the client\n" +
                     "4 Show the client by id\n" +
                     "5 Show the client's coupons\n" +
-                    "6 Exit\n");
+                    "6 Show the client's profile\n" +
+                    "7 Exit\n");
 
             int choice = scanner.nextInt();
 
             switch (choice) {
                 case 1 -> addUser();
-                case 2 -> {}
+                case 2 -> deleteClient();
                 case 3 -> {
                 }
                 case 4 -> showClient();
                 case 5 -> showCoupons();
-                case 6 -> {
+                case 6 -> showProfile();
+                case 7 -> {
                     isRunning = false;
                     System.out.println("Bye!");
                 }

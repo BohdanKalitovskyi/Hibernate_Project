@@ -29,17 +29,17 @@ public class CouponService {
     }
 
     public void addCouponToUser(Long couponId, Long clientId){
-        transactionHelper.executeInTransaction(session -> {
+            transactionHelper.executeInTransaction(session -> {
 
-            String sql = """
-                    INSERT INTO client_coupons(client_id, coupon_id)
-                    VALUES (:clientId, :couponId);
-                    """;
-            session.createNativeQuery(sql,void.class)
-                    .setParameter("clientId", clientId)
-                    .setParameter("couponId", couponId)
-                    .executeUpdate();
-        });
+                String sql = """
+                        INSERT INTO client_coupons(client_id, coupon_id)
+                        VALUES (:clientId, :couponId);
+                        """;
+                session.createNativeQuery(sql,void.class)
+                        .setParameter("clientId", clientId)
+                        .setParameter("couponId", couponId)
+                        .executeUpdate();
+            });
     }
 
     public List<Coupon> findAll(){
