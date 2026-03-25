@@ -18,8 +18,10 @@ public class ConsoleUI {
     private final OrderService orderService;
     private final ProfileService profileService;
 
+    private final Scanner scanner = new Scanner(System.in);
 
-    public ConsoleUI(ClientService clientService, CouponService couponService, OrderService orderService, ProfileService profileService) {
+    public ConsoleUI(ClientService clientService, CouponService couponService, OrderService orderService,
+            ProfileService profileService) {
         this.clientService = clientService;
         this.couponService = couponService;
         this.orderService = orderService;
@@ -27,24 +29,22 @@ public class ConsoleUI {
     }
 
     public void registrationCoupon(Long clientId) {
-        Scanner scanner = new Scanner(System.in);
         List<Coupon> coupons = couponService.findAll();
 
         System.out.println("Available Coupons:");
         coupons.forEach(c -> System.out.println("ID: " + c.getId() + " | Code: " + c.getCode()));
 
         long couponId = readLong("Enter Coupon ID to assign");
-        if(couponId<=couponService.findAll().stream().count()){
+        if (couponId <= couponService.findAll().stream().count()) {
             couponService.addCouponToUser(couponId, clientId);
             System.out.println("Coupon linked successfully!");
-        }else {
+        } else {
             registrationCoupon(clientId);
             System.out.println("Wrong coupon number");
         }
     }
 
-    public void addUser(){
-        Scanner scanner = new Scanner(System.in);
+    public void addUser() {
         System.out.println("Enter name:");
         String name = scanner.nextLine();
         long regYear = readLong("Enter the registration year");
@@ -59,43 +59,49 @@ public class ConsoleUI {
         long choice = readLong("Add more information: \n" +
                 "1 Continue: \n" +
                 "2 Later");
-        if(choice==1)
+        if (choice == 1)
             setProfile(savedClient.getId());
 
     }
 
-    public void showCoupons(){
+    public void showCoupons() {
         long Id = readLong("Enter the client's Id");
-        if(!checkIfExists(Id)) return;
+        Client client = clientService.getById(Id);
+        if (!checkIfExists(client))
+            return;
         List<Coupon> coupons = clientService.getClientCoupons(Id);
 
-        System.out.println("\n"+clientService.getById(Id).getName() + " owns :");
+        System.out.println("\n" + clientService.getById(Id).getName() + " owns :");
         coupons.forEach(coupon -> System.out.println(coupon.getCode()));
     }
 
-    public void showClient(){
+    public void showClient() {
         long Id = readLong("Enter the client's Id");
-        if(!checkIfExists(Id)) return;
         Client client = clientService.getById(Id);
-        System.out.println("Client Id: "+ client.getId() + " | Name: "+client.getName()+ " | Email: "+client.getEmail()+" | Registration Year: "+ client.getRegistrationYear());
+        if (!checkIfExists(client))
+            return;
+        System.out.println("Client Id: " + client.getId() + " | Name: " + client.getName() + " | Email: "
+                + client.getEmail() + " | Registration Year: " + client.getRegistrationYear());
     }
 
-    public void showProfile(){
+    public void showProfile() {
         long Id = readLong("Enter the client's Id");
-        if(!checkIfExists(Id)) return;
-        if(clientService.getById(Id).getProfile()==null){
+        Client client = clientService.getById(Id);
+        if (!checkIfExists(client))
+            return;
+        if (client.getProfile() == null) {
             System.out.println("This client does not have a profile");
             return;
         }
-        Client client = clientService.getById(Id);
-        System.out.println(client.getName()+"'s address: "+client.getProfile().getAddress()+" | Phone number: "+client.getProfile().getPhone());
+        System.out.println(client.getName() + "'s address: " + client.getProfile().getAddress() + " | Phone number: "
+                + client.getProfile().getPhone());
     }
 
     public void updateClient() {
-        Scanner scanner = new Scanner(System.in);
         long Id = readLong("Enter the client's Id");
-        if(!checkIfExists(Id)) return;
         Client client = clientService.getById(Id);
+        if (!checkIfExists(client))
+            return;
 
         System.out.print("Enter new name (leave blank to keep '" + client.getName() + "'): ");
         String newName = scanner.nextLine();
@@ -123,40 +129,83 @@ public class ConsoleUI {
         System.out.println("Update successful!");
     }
 
-    private void deleteClient(){
+    private void deleteClient() {
         long Id = readLong("Enter the client's Id");
-        if(!checkIfExists(Id)) return;
+        Client client = clientService.getById(Id);
+        if (!checkIfExists(client))
+            return;
         clientService.deleteClient(Id);
     }
 
-    private void setProfile(Long clientId){
-        Scanner scanner = new Scanner(System.in);
+    private void setProfile(Long clientId) {
         System.out.println("Enter the phone number: ");
         String phone = scanner.nextLine();
         System.out.println("Enter the home address: ");
         String address = scanner.nextLine();
-        profileService.saveProfile(new Profile(address,phone,clientService.getById(clientId)));
+        profileService.saveProfile(new Profile(address, phone, clientService.getById(clientId)));
     }
 
-    public void addProfile(){
+    public void addProfile() {
         long Id = readLong("Enter the client's Id");
-        if(!checkIfExists(Id)) return;
         Client client = clientService.getById(Id);
-        if(client.getProfile()==null){
+        if (!checkIfExists(client))
+            return;
+        if (client.getProfile() == null) {
             setProfile(Id);
-        }else {
+        } else {
             System.out.println("Client has the profile, update if needed.");
         }
     }
 
+    public void addOrder() {
+        long Id = readLong("Enter the client's Id");
+        Client client = clientService.getById(Id);
 
+        if (client == null) {
+            System.out.println("Client with ID " + Id + " not found.");
+            return;
+        }
 
+        long orderYear = readLong("Enter the order year:");
+        double amount = readDouble("Enter the amount");
+        String status = "Processing";
 
+        orderService.saveOrder(orderYear, amount, status, client);
+        System.out.println("Order created for client: " + client.getName());
+    }
 
+    public void addCoupon() {
+        System.out.println("Enter coupon code:");
+        String code = scanner.nextLine();
+        double discount = readDouble("Enter discount percentage (e.g., 20.0)");
+        couponService.saveCoupon(new Coupon((float) discount, code));
+        System.out.println("Coupon created successfully!");
+    }
 
+    public void showOrders() {
+        long id = readLong("Enter the client's Id");
+        Client client = clientService.getById(id);
+        if (!checkIfExists(client))
+            return;
+        List<Order> orders = client.getOrders();
+        System.out.println("\n" + client.getName() + " has " + orders.size() + " orders:");
+        orders.forEach(order -> System.out.println("ID: " + order.getId() + " | Year: " + order.getOrderYear()
+                + " | Amount: " + order.getTotalAmount() + " | Status: " + order.getStatus()));
+    }
+
+    private double readDouble(String message) {
+        while (true) {
+            System.out.println(message + ": ");
+            String input = scanner.nextLine();
+            try {
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! '" + input + "' is not a number. Try again.");
+            }
+        }
+    }
 
     private long readLong(String message) {
-        Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println(message + ": ");
             String input = scanner.nextLine();
@@ -168,24 +217,21 @@ public class ConsoleUI {
         }
     }
 
-    public boolean checkIfExists(long Id){
-        if (clientService.getById(Id) == null){
+    public boolean checkIfExists(Client client) {
+        if (client == null) {
             System.out.println("Error: Client not found.");
             return false;
         }
         return true;
     }
 
-
-
     public void start() {
-        Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
 
-        couponService.saveCoupon(new Coupon(40f,"OFF40"));
-        couponService.saveCoupon(new Coupon(50f,"OFF50"));
+        couponService.saveCoupon(new Coupon(40f, "OFF40"));
+        couponService.saveCoupon(new Coupon(50f, "OFF50"));
 
-        for (int i = 0; i<10; i++){
+        for (int i = 0; i < 10; i++) {
             System.out.println();
         }
 
@@ -195,24 +241,29 @@ public class ConsoleUI {
                     "2 Delete Client\n" +
                     "3 Update the client\n" +
                     "4 Add profile to the client\n" +
-                    "5 \n" +
-                    "6 \n" +
-                    "7 \n" +
+                    "5 Make an order\n" +
+                    "6 Create a new coupon\n" +
+                    "7 Show the client's orders\n" +
                     "8 Show the client by id\n" +
                     "9 Show the client's coupons\n" +
                     "10 Show the client's profile\n" +
                     "11 Exit\n");
 
-            int choice = scanner.nextInt();
+            int choice = -1;
+            try {
+                String input = scanner.nextLine().trim();
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+            }
 
             switch (choice) {
                 case 1 -> addUser();
                 case 2 -> deleteClient();
                 case 3 -> updateClient();
                 case 4 -> addProfile();
-                case 5 -> {}
-                case 6 -> {}
-                case 7 -> {}
+                case 5 -> addOrder();
+                case 6 -> addCoupon();
+                case 7 -> showOrders();
                 case 8 -> showClient();
                 case 9 -> showCoupons();
                 case 10 -> showProfile();
