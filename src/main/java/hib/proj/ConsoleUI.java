@@ -7,6 +7,8 @@ import services.OrderService;
 import services.ProfileService;
 
 import java.io.Console;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 @Component
@@ -24,9 +26,68 @@ public class ConsoleUI {
         this.profileService = profileService;
     }
 
+    public void registrationCoupon(Long clientId) {
+        Scanner scanner = new Scanner(System.in);
+        List<Coupon> coupons = couponService.findAll();
+
+        System.out.println("Available Coupons:");
+        coupons.forEach(c -> System.out.println("ID: " + c.getId() + " | Code: " + c.getCode()));
+
+        long couponId = readLong("Enter Coupon ID to assign");
+
+        couponService.addCouponToUser(couponId, clientId);
+        System.out.println("Coupon linked successfully!");
+    }
+
+    public void addUser(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter name:");
+        String name = scanner.nextLine();
+        long regYear = readLong("Enter the registration year");
+        System.out.println("Enter email:");
+        String email = scanner.nextLine();
+
+        Client savedClient = clientService.saveClient(new Client(regYear, email, name));
+        System.out.println("Client saved with ID: " + savedClient.getId());
+
+        registrationCoupon(savedClient.getId());
+    }
+
+    public void showCoupons(){
+        long id = readLong("Enter the client's Id");
+        List<Coupon> coupons = clientService.getClientCoupons(id);
+
+        System.out.println("\n"+clientService.getById(id).getName() + " owns :");
+        coupons.forEach(coupon -> System.out.println(coupon.getCode()));
+    }
+
+    public void showClient(){
+        long clientId = readLong("Enter the client's Id");
+        Client client = clientService.getById(clientId);
+        System.out.println("Client Id: "+ client.getId() + " | Name: "+client.getName()+ " | Email: "+client.getEmail()+" | Registration Year: "+ client.getRegistrationYear());
+    }
+
+    private long readLong(String message) {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println(message + ": ");
+            String input = scanner.nextLine();
+            try {
+                return Long.parseLong(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! '" + input + "' is not a number. Try again.");
+            }
+        }
+    }
+
+
+
     public void start() {
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
+
+        couponService.saveCoupon(new Coupon(40f,"OFF40"));
+        couponService.saveCoupon(new Coupon(50f,"OFF50"));
 
         for (int i = 0; i<10; i++){
             System.out.println();
@@ -35,30 +96,22 @@ public class ConsoleUI {
         while (isRunning) {
             System.out.println("Choose the action:\n" +
                     "1 Add a client\n" +
-                    "2 Delete the client by id\n" +
+                    "2 Delete Client\n" +
                     "3 Update the client\n" +
                     "4 Show the client by id\n" +
-                    "5 Exit\n");
+                    "5 Show the client's coupons\n" +
+                    "6 Exit\n");
 
             int choice = scanner.nextInt();
 
             switch (choice) {
-                case 1 -> {
-//                    long regYear = scanner.nextLong();
-//                    String email = scanner.next();
-//                    String name = scanner.next();
-//                    clientService.saveClient(new Client(regYear,email,name));
-                }
-                case 2 -> {
-                }
+                case 1 -> addUser();
+                case 2 -> {}
                 case 3 -> {
-
                 }
-                case 4 -> {
-                    long clientId = scanner.nextLong();
-                    System.out.println(clientService.getById(clientId));
-                }
-                case 5 -> {
+                case 4 -> showClient();
+                case 5 -> showCoupons();
+                case 6 -> {
                     isRunning = false;
                     System.out.println("Bye!");
                 }

@@ -1,12 +1,14 @@
 package services;
 
 import hib.proj.Client;
+import hib.proj.Coupon;
 import hib.proj.TransactionHelper;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,6 +50,16 @@ public class ClientService {
     public Client updateClient(Client client){
         return transactionHelper.executeInTransaction(session -> {
            return session.merge(client);
+        });
+    }
+
+    public List<Coupon> getClientCoupons(Long clientId) {
+        return transactionHelper.executeInTransaction(session -> {
+            Client client = session.get(Client.class, clientId);
+            if (client == null) {
+                return null;
+            }
+            return new ArrayList<>(client.getCoupons());
         });
     }
 

@@ -35,7 +35,7 @@ public class Client {
     @OneToOne(mappedBy = "client",cascade = CascadeType.REMOVE)
     private Profile profile;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
     private List<Order> orders = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -57,6 +57,13 @@ public class Client {
     public Client() {
     }
 
+    public List<Coupon> getCouponList() {
+        return couponList;
+    }
+
+    public void setCouponList(List<Coupon> couponList) {
+        this.couponList = couponList;
+    }
 
     public Client(long registrationYear, String email, String name) {
         this.registrationYear = registrationYear;
@@ -96,6 +103,10 @@ public class Client {
         this.registrationYear = registrationYear;
     }
 
+    public List<Coupon> getCoupons() {
+        return couponList;
+    }
+
     @Override
     public String toString() {
         return "Client{" +
@@ -103,8 +114,8 @@ public class Client {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", registrationYear=" + registrationYear +
-                ", profile=" + profile +
-                ", orders=" + orders +
                 '}';
     }
+
+
 }

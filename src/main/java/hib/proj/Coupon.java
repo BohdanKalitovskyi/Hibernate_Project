@@ -60,4 +60,13 @@ public class Coupon {
     public void setId(long id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "Coupon{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", discount=" + discount +
+                '}';
+    }
 }

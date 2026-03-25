@@ -25,22 +25,5 @@ public class Main {
 
         context.getBean(ConsoleUI.class).start();
 
-
-//        Client client = new Client(2001,"cl1@gmail.com","Bob");
-//
-//        clientService.saveClient(client);
-//
-//        Profile profile = new Profile("023412311","Shevchenka st. 111",client);
-//
-//        profileService.saveProfile(profile);
-//
-//        orderService.saveOrder(2003L,10.2,"processing",client);
-//
-//        Coupon coupon = new Coupon(40f,"40percentOff");
-//        couponService.saveCoupon(coupon);
-//
-//        couponService.addCouponToUser(1L,1L);
-
-
     }
 }
