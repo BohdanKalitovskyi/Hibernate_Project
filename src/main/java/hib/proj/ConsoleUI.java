@@ -34,9 +34,13 @@ public class ConsoleUI {
         coupons.forEach(c -> System.out.println("ID: " + c.getId() + " | Code: " + c.getCode()));
 
         long couponId = readLong("Enter Coupon ID to assign");
-
-        couponService.addCouponToUser(couponId, clientId);
-        System.out.println("Coupon linked successfully!");
+        if(couponId<=couponService.findAll().stream().count()){
+            couponService.addCouponToUser(couponId, clientId);
+            System.out.println("Coupon linked successfully!");
+        }else {
+            registrationCoupon(clientId);
+            System.out.println("Wrong coupon number");
+        }
     }
 
     public void addUser(){
@@ -61,22 +65,68 @@ public class ConsoleUI {
     }
 
     public void showCoupons(){
-        long id = readLong("Enter the client's Id");
-        List<Coupon> coupons = clientService.getClientCoupons(id);
+        long Id = readLong("Enter the client's Id");
+        if(!checkIfExists(Id)) return;
+        List<Coupon> coupons = clientService.getClientCoupons(Id);
 
-        System.out.println("\n"+clientService.getById(id).getName() + " owns :");
+        System.out.println("\n"+clientService.getById(Id).getName() + " owns :");
         coupons.forEach(coupon -> System.out.println(coupon.getCode()));
     }
 
     public void showClient(){
-        long clientId = readLong("Enter the client's Id");
-        Client client = clientService.getById(clientId);
+        long Id = readLong("Enter the client's Id");
+        if(!checkIfExists(Id)) return;
+        Client client = clientService.getById(Id);
         System.out.println("Client Id: "+ client.getId() + " | Name: "+client.getName()+ " | Email: "+client.getEmail()+" | Registration Year: "+ client.getRegistrationYear());
     }
 
+    public void showProfile(){
+        long Id = readLong("Enter the client's Id");
+        if(!checkIfExists(Id)) return;
+        if(clientService.getById(Id).getProfile()==null){
+            System.out.println("This client does not have a profile");
+            return;
+        }
+        Client client = clientService.getById(Id);
+        System.out.println(client.getName()+"'s address: "+client.getProfile().getAddress()+" | Phone number: "+client.getProfile().getPhone());
+    }
+
+    public void updateClient() {
+        Scanner scanner = new Scanner(System.in);
+        long Id = readLong("Enter the client's Id");
+        if(!checkIfExists(Id)) return;
+        Client client = clientService.getById(Id);
+
+        System.out.print("Enter new name (leave blank to keep '" + client.getName() + "'): ");
+        String newName = scanner.nextLine();
+        if (!newName.isBlank()) {
+            client.setName(newName);
+        }
+
+        System.out.print("Enter new email (leave blank to keep '" + client.getEmail() + "'): ");
+        String newEmail = scanner.nextLine();
+        if (!newEmail.isBlank()) {
+            client.setEmail(newEmail);
+        }
+
+        System.out.print("Enter new registration year (leave blank to keep " + client.getRegistrationYear() + "): ");
+        String yearInput = scanner.nextLine();
+        if (!yearInput.isBlank()) {
+            try {
+                client.setRegistrationYear(Long.parseLong(yearInput));
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid year format. Keeping the old value.");
+            }
+        }
+
+        clientService.updateClient(client);
+        System.out.println("Update successful!");
+    }
+
     private void deleteClient(){
-        long clientId = readLong("Enter the client's Id");
-        clientService.deleteClient(clientId);
+        long Id = readLong("Enter the client's Id");
+        if(!checkIfExists(Id)) return;
+        clientService.deleteClient(Id);
     }
 
     private void setProfile(Long clientId){
@@ -88,11 +138,22 @@ public class ConsoleUI {
         profileService.saveProfile(new Profile(address,phone,clientService.getById(clientId)));
     }
 
-    public void showProfile(){
-        long clientId = readLong("Enter the client's Id");
-        Client client = clientService.getById(clientId);
-        System.out.println(client.getName()+"'s address: "+client.getProfile().getAddress()+" | Phone number: "+client.getProfile().getPhone());
+    public void addProfile(){
+        long Id = readLong("Enter the client's Id");
+        if(!checkIfExists(Id)) return;
+        Client client = clientService.getById(Id);
+        if(client.getProfile()==null){
+            setProfile(Id);
+        }else {
+            System.out.println("Client has the profile, update if needed.");
+        }
     }
+
+
+
+
+
+
 
     private long readLong(String message) {
         Scanner scanner = new Scanner(System.in);
@@ -105,6 +166,14 @@ public class ConsoleUI {
                 System.out.println("Invalid input! '" + input + "' is not a number. Try again.");
             }
         }
+    }
+
+    public boolean checkIfExists(long Id){
+        if (clientService.getById(Id) == null){
+            System.out.println("Error: Client not found.");
+            return false;
+        }
+        return true;
     }
 
 
@@ -125,22 +194,30 @@ public class ConsoleUI {
                     "1 Add a client\n" +
                     "2 Delete Client\n" +
                     "3 Update the client\n" +
-                    "4 Show the client by id\n" +
-                    "5 Show the client's coupons\n" +
-                    "6 Show the client's profile\n" +
-                    "7 Exit\n");
+                    "4 Add profile to the client\n" +
+                    "5 \n" +
+                    "6 \n" +
+                    "7 \n" +
+                    "8 Show the client by id\n" +
+                    "9 Show the client's coupons\n" +
+                    "10 Show the client's profile\n" +
+                    "11 Exit\n");
 
             int choice = scanner.nextInt();
 
             switch (choice) {
                 case 1 -> addUser();
                 case 2 -> deleteClient();
-                case 3 -> {
-                }
-                case 4 -> showClient();
-                case 5 -> showCoupons();
-                case 6 -> showProfile();
-                case 7 -> {
+                case 3 -> updateClient();
+                case 4 -> addProfile();
+                case 5 -> {}
+                case 6 -> {}
+                case 7 -> {}
+                case 8 -> showClient();
+                case 9 -> showCoupons();
+                case 10 -> showProfile();
+
+                case 11 -> {
                     isRunning = false;
                     System.out.println("Bye!");
                 }
