@@ -231,6 +231,18 @@ public class ConsoleUI {
                 + " | Amount: " + order.getTotalAmount() + " | Status: " + order.getStatus()));
     }
 
+    public void showClientsByYear() {
+        long year = readLong("Enter registration year to search");
+        List<Client> clients = clientService.findByRegistrationYear(year);
+        if (clients.isEmpty()) {
+            System.out.println("No clients found for year " + year);
+            return;
+        }
+        System.out.println("\nClients registered in " + year + ":");
+        clients.forEach(
+                c -> System.out.println("ID: " + c.getId() + " | Name: " + c.getName() + " | Email: " + c.getEmail()));
+    }
+
     private double readDouble(String message) {
         while (true) {
             System.out.println(message + ": ");
@@ -269,10 +281,6 @@ public class ConsoleUI {
         couponService.saveCoupon(new Coupon(40f, "OFF40"));
         couponService.saveCoupon(new Coupon(50f, "OFF50"));
 
-        for (int i = 0; i < 10; i++) {
-            System.out.println();
-        }
-
         while (isRunning) {
             System.out.println("Choose the action:\n" +
                     "1 Add a client\n" +
@@ -288,7 +296,8 @@ public class ConsoleUI {
                     "11 Update the client's profile\n" +
                     "12 Assign a coupon to client\n" +
                     "13 Cancel an order\n" +
-                    "14 Exit\n");
+                    "14 Search clients by registration year\n" +
+                    "15 Exit\n");
 
             int choice = -1;
             try {
@@ -311,7 +320,8 @@ public class ConsoleUI {
                 case 11 -> updateProfile();
                 case 12 -> assignCoupon();
                 case 13 -> cancelOrder();
-                case 14 -> {
+                case 14 -> showClientsByYear();
+                case 15 -> {
                     isRunning = false;
                     System.out.println("Bye!");
                 }

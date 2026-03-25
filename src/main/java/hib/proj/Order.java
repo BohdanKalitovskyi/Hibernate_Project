@@ -10,13 +10,13 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "order_year")
+    @Column(name = "order_year", nullable = false)
     private long orderYear;
 
-    @Column(name = "total_amount")
+    @Column(name = "total_amount", nullable = false)
     private double totalAmount;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private String status;
 
     @ManyToOne
@@ -34,7 +34,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(long orderYear, double totalAmount, String status,Client client) {
+    public Order(long orderYear, double totalAmount, String status, Client client) {
         this.orderYear = orderYear;
         this.totalAmount = totalAmount;
         this.status = status;

@@ -12,10 +12,10 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "code")
+    @Column(name = "code", nullable = false, unique = true)
     private String code;
 
-    @Column(name = "discount")
+    @Column(name = "discount", nullable = false)
     private float discount;
 
     @ManyToMany(mappedBy = "couponList")

@@ -16,35 +16,33 @@ public class TransactionHelper {
         this.sessionFactory = sessionFactory;
     }
 
-    public void executeInTransaction(Consumer<Session> action){
+    public void executeInTransaction(Consumer<Session> action) {
         Transaction transaction = null;
-        try(Session session = sessionFactory.openSession()){
-            transaction = session.getTransaction();
-            transaction.begin();
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
 
             action.accept(session);
 
-            session.getTransaction().commit();
-        }catch (Exception e){
-            if(transaction != null){
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
                 transaction.rollback();
             }
             throw e;
         }
     }
 
-    public<T> T executeInTransaction(Function<Session,T> action){
+    public <T> T executeInTransaction(Function<Session, T> action) {
         Transaction transaction = null;
-        try(Session session = sessionFactory.openSession()){
-            transaction = session.getTransaction();
-            transaction.begin();
+        try (Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
 
             var result = action.apply(session);
 
-            session.getTransaction().commit();
+            transaction.commit();
             return result;
-        }catch (Exception e){
-            if(transaction != null){
+        } catch (Exception e) {
+            if (transaction != null) {
                 transaction.rollback();
             }
             throw e;

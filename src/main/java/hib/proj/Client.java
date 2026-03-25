@@ -23,27 +23,23 @@ public class Client {
         this.id = id;
     }
 
-    @Column(name = "client_name")
+    @Column(name = "client_name", nullable = false)
     private String name;
 
-    @Column(name = "client_email")
+    @Column(name = "client_email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "registration_year")
+    @Column(name = "registration_year", nullable = false)
     private long registrationYear;
 
-    @OneToOne(mappedBy = "client",cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "client", cascade = CascadeType.REMOVE)
     private Profile profile;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.REMOVE,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Order> orders = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "client_coupons",
-            joinColumns = @JoinColumn(name = "client_id",referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "coupon_id", referencedColumnName = "id")
-    )
+    @JoinTable(name = "client_coupons", joinColumns = @JoinColumn(name = "client_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "coupon_id", referencedColumnName = "id"))
     private List<Coupon> couponList = new ArrayList<>();
 
     public List<Order> getOrders() {
@@ -116,6 +112,5 @@ public class Client {
                 ", registrationYear=" + registrationYear +
                 '}';
     }
-
 
 }

@@ -21,35 +21,44 @@ public class ClientService {
         this.transactionHelper = transactionHelper;
     }
 
-    public Client saveClient(Client client){
+    public Client saveClient(Client client) {
         return transactionHelper.executeInTransaction(session -> {
-           session.persist(client);
-           return client;
+            session.persist(client);
+            return client;
         });
     }
 
-    public void deleteClient(long id){
+    public void deleteClient(long id) {
         transactionHelper.executeInTransaction(session -> {
-            Client clientToDelete = session.get(Client.class,id);
+            Client clientToDelete = session.get(Client.class, id);
             session.remove(clientToDelete);
         });
     }
 
-    public Client getById(long id){
-        try(Session session = sessionFactory.openSession()){
-            return  session.get(Client.class, id);
+    public Client getById(long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.get(Client.class, id);
         }
     }
 
-    public List<Client> findAll(){
-        try(Session session = sessionFactory.openSession()){
-            return session.createQuery("SELECT s from Client s ",Client.class).list();
+    public List<Client> findAll() {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery("SELECT s from Client s ", Client.class).list();
         }
     }
 
-    public Client updateClient(Client client){
+    public List<Client> findByRegistrationYear(long year) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery(
+                    "SELECT c FROM Client c WHERE c.registrationYear = :year", Client.class)
+                    .setParameter("year", year)
+                    .list();
+        }
+    }
+
+    public Client updateClient(Client client) {
         return transactionHelper.executeInTransaction(session -> {
-           return session.merge(client);
+            return session.merge(client);
         });
     }
 
